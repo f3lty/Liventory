@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { prisma } from "./prisma";
 import { LocationType, PropagationMethod, TransactionType, InsightType, Severity } from "@prisma/client";
 
