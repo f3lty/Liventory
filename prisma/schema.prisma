@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model Location {
@@ -29,26 +30,26 @@ enum LocationType {
 }
 
 model Inventory {
-  id                String               @id @default(cuid())
+  id                String                 @id @default(cuid())
   plantName         String
   botanicalName     String?
   cultivar          String?
   containerSize     String?
-  quantityAvailable Int                  @default(0)
-  quantityReserved  Int                  @default(0)
-  quantitySold      Int                  @default(0)
+  quantityAvailable Int                    @default(0)
+  quantityReserved  Int                    @default(0)
+  quantitySold      Int                    @default(0)
   locationId        String?
-  location          Location?            @relation(fields: [locationId], references: [id], onDelete: SetNull)
-  propagationMethod PropagationMethod     @default(CUTTING)
-  costPerUnit       Decimal?             @db.Decimal(10, 2)
-  retailPrice       Decimal?             @db.Decimal(10, 2)
-  wholesalePrice    Decimal?             @db.Decimal(10, 2)
+  location          Location?              @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  propagationMethod PropagationMethod       @default(CUTTING)
+  costPerUnit       Decimal?               @db.Decimal(10, 2)
+  retailPrice       Decimal?               @db.Decimal(10, 2)
+  wholesalePrice    Decimal?               @db.Decimal(10, 2)
   category          String?
-  lowStockThreshold Int                  @default(10)
+  lowStockThreshold Int                    @default(10)
   notes             String?
-  isDemo            Boolean              @default(false)
-  dateAdded         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  isDemo            Boolean                @default(false)
+  dateAdded         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
   transactions      InventoryTransaction[]
 }
 
