@@ -1,0 +1,109 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Location {
+  id           String                 @id @default(cuid())
+  name         String                 @unique
+  description  String?
+  type         LocationType           @default(GREENHOUSE)
+  isDemo       Boolean                @default(false)
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  inventory    Inventory[]
+  transactions InventoryTransaction[]
+}
+
+enum LocationType {
+  GREENHOUSE
+  HOOP_HOUSE
+  FIELD
+  SHADE_HOUSE
+  OVERWINTERING
+  NURSERY_BED
+  OTHER
+}
+
+model Inventory {
+  id                String               @id @default(cuid())
+  plantName         String
+  botanicalName     String?
+  cultivar          String?
+  containerSize     String?
+  quantityAvailable Int                  @default(0)
+  quantityReserved  Int                  @default(0)
+  quantitySold      Int                  @default(0)
+  locationId        String?
+  location          Location?            @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  propagationMethod PropagationMethod     @default(CUTTING)
+  costPerUnit       Decimal?             @db.Decimal(10, 2)
+  retailPrice       Decimal?             @db.Decimal(10, 2)
+  wholesalePrice    Decimal?             @db.Decimal(10, 2)
+  category          String?
+  lowStockThreshold Int                  @default(10)
+  notes             String?
+  isDemo            Boolean              @default(false)
+  dateAdded         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  transactions      InventoryTransaction[]
+}
+
+enum PropagationMethod {
+  CUTTING
+  SEED
+  DIVISION
+  GRAFTING
+  LAYERING
+  TISSUE_CULTURE
+  PURCHASED
+  OTHER
+}
+
+model InventoryTransaction {
+  id             String          @id @default(cuid())
+  inventoryId    String
+  inventory      Inventory       @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  type           TransactionType
+  quantity       Int
+  fromLocationId String?
+  fromLocation   Location?       @relation(fields: [fromLocationId], references: [id], onDelete: SetNull)
+  notes          String?
+  isDemo         Boolean         @default(false)
+  createdAt      DateTime        @default(now())
+}
+
+enum TransactionType {
+  ADD
+  REMOVE
+  MOVE
+  ADJUST
+  SALE
+  RESERVATION
+}
+
+model AiInsight {
+  id        String      @id @default(cuid())
+  type      InsightType
+  title     String
+  body      String      @db.Text
+  severity  Severity    @default(INFO)
+  isRead    Boolean     @default(false)
+  isDemo    Boolean     @default(false)
+  createdAt DateTime    @default(now())
+}
+
+enum InsightType {
+  INVENTORY_ANALYST
+  PRODUCTION_PLANNER
+  OPERATIONS_ADVISOR
+}
+
+enum Severity {
+  INFO
+  WARNING
+  CRITICAL
+}
